@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  user-management:
+    build: ./user-management-service
+    ports:
+      - "3001:3000"
+    env_file:
+      - ./user-management-service/.env
+    depends_on:
+      - db
+
+  poll-management:
+    build: ./poll-management-service
+    ports:
+      - "3002:3000"
+    env_file:
+      - ./poll-management-service/.env
+    depends_on:
+      - mongo
+
+  voting-service:
+    build: ./voting-service
+    ports:
+      - "3003:3000"
+    env_file:
+      - ./voting-service/.env
+    depends_on:
+      - db
+
+  analytics-service:
+    build: ./analytics-service
+    ports:
+      - "3004:3000"
+    env_file:
+      - ./analytics-service/.env
+    depends_on:
+      - mongo
+
+  notification-service:
+    build: ./notification-service
+    ports:
+      - "3005:3000"
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "3000:3000"
+    depends_on:
+      - user-management
+      - poll-management
+      - voting-service
+      - analytics-service
+      - notification-service
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: users
+    ports:
+      - "5432:5432"
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
