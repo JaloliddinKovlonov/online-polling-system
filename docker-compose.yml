@@ -1,6 +1,31 @@
 version: '3.8'
 
 services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "3000:3000"
+    depends_on:
+      - user-management
+      - poll-management
+      - voting-service
+      - analytics-service
+      - notification-service
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: users
+    ports:
+      - "5432:5432"
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+
   user-management:
     build: ./user-management-service
     ports:
@@ -9,6 +34,7 @@ services:
       - ./user-management-service/.env
     depends_on:
       - db
+    command: ["./wait-for-it.sh", "db:5432", "--", "node", "index.js"]
 
   poll-management:
     build: ./poll-management-service
@@ -41,28 +67,3 @@ services:
     build: ./notification-service
     ports:
       - "3005:3000"
-
-  api-gateway:
-    build: ./api-gateway
-    ports:
-      - "3000:3000"
-    depends_on:
-      - user-management
-      - poll-management
-      - voting-service
-      - analytics-service
-      - notification-service
-
-  db:
-    image: postgres
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: users
-    ports:
-      - "5432:5432"
-
-  mongo:
-    image: mongo
-    ports:
-      - "27017:27017"
