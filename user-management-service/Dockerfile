@@ -17,7 +17,7 @@ COPY . .
 COPY wait-for-it.sh /usr/bin/wait-for-it
 
 # Expose the port
-EXPOSE 3000
+EXPOSE 3001
 
 # Use wait-for-it to ensure the database is ready
 CMD ["wait-for-it", "db:5432", "--", "node", "index.js"]

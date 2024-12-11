@@ -7,6 +7,9 @@ WORKDIR /app
 # Copy go.mod and go.sum files
 COPY go.mod go.sum ./
 
+COPY wait-for-it.sh /usr/bin/wait-for-it
+
+
 # Download dependencies
 RUN go mod download
 

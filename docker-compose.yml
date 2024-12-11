@@ -17,9 +17,10 @@ services:
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: users
     ports:
       - "5432:5432"
+    volumes:
+    - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   mongo:
     image: mongo
@@ -53,6 +54,8 @@ services:
       - ./voting-service/.env
     depends_on:
       - db
+    command: ["wait-for-it", "db:5432", "--", "go", "run", "main.go"]
+
 
   analytics-service:
     build: ./analytics-service
