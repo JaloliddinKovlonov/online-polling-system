@@ -60,7 +60,7 @@ const CreatePoll = () => {
       const expiresAtUTC = new Date(selectedTime).toISOString();
 
       const response = await axios.post(
-        "http://localhost:3000/polls", // Backend endpoint for creating polls
+        `${import.meta.env.VITE_API_URL}/polls`, // Backend endpoint for creating polls
         {
           user_id: auth.user.id,
           creator_email: auth.user.email,

@@ -7,10 +7,15 @@ services:
       - "3000:3000"
     depends_on:
       - user-management
+      - user-management-2
       - poll-management
+      - poll-management-2
       - voting-service
+      - voting-service-2
       - analytics-service
+      - analytics-service-2
       - notification-service
+      - notification-service-2
 
   db:
     image: postgres
@@ -20,7 +25,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-    - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   mongo:
     image: mongo
@@ -28,6 +33,7 @@ services:
       - "27017:27017"
 
   user-management:
+    container_name: user-management-1
     build: ./user-management-service
     ports:
       - "3001:3000"
@@ -37,7 +43,17 @@ services:
       - db
     command: ["./wait-for-it.sh", "db:5432", "--", "node", "index.js"]
 
+  user-management-2:
+    container_name: user-management-2
+    build: ./user-management-service
+    env_file:
+      - ./user-management-service/.env
+    depends_on:
+      - db
+    command: ["./wait-for-it.sh", "db:5432", "--", "node", "index.js"]
+
   poll-management:
+    container_name: poll-management-1
     build: ./poll-management-service
     ports:
       - "3002:3000"
@@ -46,7 +62,16 @@ services:
     depends_on:
       - mongo
 
+  poll-management-2:
+    container_name: poll-management-2
+    build: ./poll-management-service
+    env_file:
+      - ./poll-management-service/.env
+    depends_on:
+      - mongo
+
   voting-service:
+    container_name: voting-service-1
     build: ./voting-service
     ports:
       - "3003:3000"
@@ -56,8 +81,17 @@ services:
       - db
     command: ["wait-for-it", "db:5432", "--", "go", "run", "main.go"]
 
+  voting-service-2:
+    container_name: voting-service-2
+    build: ./voting-service
+    env_file:
+      - ./voting-service/.env
+    depends_on:
+      - db
+    command: ["wait-for-it", "db:5432", "--", "go", "run", "main.go"]
 
   analytics-service:
+    container_name: analytics-service-1
     build: ./analytics-service
     ports:
       - "3004:3000"
@@ -66,7 +100,21 @@ services:
     depends_on:
       - mongo
 
+  analytics-service-2:
+    container_name: analytics-service-2
+    build: ./analytics-service
+    env_file:
+      - ./analytics-service/.env
+    depends_on:
+      - mongo
+
   notification-service:
+    container_name: notification-service-1
     build: ./notification-service
     ports:
       - "3005:3000"
+
+  notification-service-2:
+    container_name: notification-service-2
+    build: ./notification-service
+    

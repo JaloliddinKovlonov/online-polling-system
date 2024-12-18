@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Pie } from "react-chartjs-2";
+import { AuthContext } from "../context/AuthContext";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -14,6 +15,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const Results = () => {
   const { pollId } = useParams(); // Get poll ID from the route
   const navigate = useNavigate(); // To navigate to other pages
+  const { auth } = useContext(AuthContext); // Get auth state from context
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -21,7 +23,11 @@ const Results = () => {
   // Function to fetch poll results
   const fetchResults = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/analytics/results/${pollId}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/analytics/results/${pollId}`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`, // Include the token in the header
+        },
+      });
       setResults(response.data);
       setLoading(false);
     } catch (error) {
@@ -42,7 +48,7 @@ const Results = () => {
   }, [pollId]);
 
   const generateShareableLink = () => {
-    return `${window.location.origin}/polls/${pollId}`;
+    return `${import.meta.env.VITE_API_URL}/polls/${pollId}`;
   };
 
   if (loading) {

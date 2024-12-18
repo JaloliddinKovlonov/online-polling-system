@@ -14,9 +14,12 @@ const PollDetails = () => {
 
   useEffect(() => {
     // Fetch poll details from the Poll Management Service
-    axios
-      .get(`http://localhost:3000/polls/${pollId}`)
-      .then((response) => {
+    const fetchPollDetails = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/polls/${pollId}`, {
+          headers: auth.token ? { Authorization: `Bearer ${auth.token}` } : {},
+        });
+
         setPoll(response.data);
 
         // Check if poll has expired
@@ -24,12 +27,14 @@ const PollDetails = () => {
         if (new Date() > expiresAt) {
           setIsExpired(true);
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching poll details:", error);
         setMessage("Error loading poll details.");
-      });
-  }, [pollId]);
+      }
+    };
+
+    fetchPollDetails();
+  }, [pollId, auth.token]);
 
   const handleVote = async () => {
     if (!selectedOption) {
@@ -49,7 +54,7 @@ const PollDetails = () => {
       }
 
       // Submit vote to Voting Service
-      const response = await axios.post("http://localhost:3000/votes", votePayload, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/votes`, votePayload, {
         headers: auth.token ? { Authorization: `Bearer ${auth.token}` } : {},
       });
 

@@ -9,14 +9,13 @@ const Profile = () => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
-    address: "",
   });
   const [error, setError] = useState("");
 
   useEffect(() => {
     // Fetch user profile
     axios
-      .get("http://localhost:3000/users/profile", {
+      .get(`${import.meta.env.VITE_API_URL}/users/profile`, {
         headers: { Authorization: `Bearer ${auth.token}` },
       })
       .then((response) => {
@@ -32,7 +31,7 @@ const Profile = () => {
 
   const handleSave = () => {
     axios
-      .patch("http://localhost:3000/users/profile", formData, {
+      .patch(`${import.meta.env.VITE_API_URL}/users/profile`, formData, {
         headers: { Authorization: `Bearer ${auth.token}` },
       })
       .then((response) => {
@@ -73,16 +72,6 @@ const Profile = () => {
               className="w-full border p-2 rounded"
             />
           </div>
-          <div className="mb-4">
-            <label className="block font-medium mb-1">Address</label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              className="w-full border p-2 rounded"
-            />
-          </div>
           <button
             onClick={handleSave}
             className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
@@ -103,9 +92,6 @@ const Profile = () => {
           </p>
           <p>
             <strong>Email:</strong> {profile.email}
-          </p>
-          <p>
-            <strong>Address:</strong> {profile.address || "Not provided"}
           </p>
           <button
             onClick={() => setEditMode(true)}

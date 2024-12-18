@@ -15,7 +15,7 @@ const Dashboard = () => {
 
   const fetchUserPolls = () => {
     axios
-      .get(`http://localhost:3000/polls/user/${auth.user.id}`, {
+      .get(`${import.meta.env.VITE_API_URL}/polls/user/${auth.user.id}`, {
         headers: { Authorization: `Bearer ${auth.token}` },
       })
       .then((response) => setPolls(response.data))
@@ -32,7 +32,7 @@ const Dashboard = () => {
     if (!confirmed) return;
 
     axios
-      .delete(`http://localhost:3000/polls/${pollId}`, {
+      .delete(`${import.meta.env.VITE_API_URL}/polls/${pollId}`, {
         headers: { Authorization: `Bearer ${auth.token}` },
       })
       .then(() => {
@@ -89,7 +89,7 @@ const Dashboard = () => {
                 <button
                   className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                   onClick={() =>
-                    window.location.href = `/polls/${poll.poll_id}/results`
+                    `${import.meta.env.VITE_HOST_URL}/polls/${poll.poll_id}/results`
                   }
                 >
                   View Results

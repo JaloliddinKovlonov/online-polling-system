@@ -25,9 +25,15 @@ func main() {
 	router.HandleFunc("/", routes.SubmitVote).Methods("POST")
 	router.HandleFunc("/{pollId}", routes.GetVotes).Methods("GET")
 
+	// Get frontend URL from the environment variable
+	frontendURL := os.Getenv("FRONTEND_URL")
+	if frontendURL == "" {
+		log.Fatal("FRONTEND_URL environment variable is not set")
+	}
+
 	// Apply CORS to the router
 	corsOptions := handlers.CORS(
-		handlers.AllowedOrigins([]string{"http://localhost:5173"}), // React app's URL
+		handlers.AllowedOrigins([]string{frontendURL}), // React app's URL
 		handlers.AllowedMethods([]string{"GET", "POST", "PATCH", "DELETE"}),
 		handlers.AllowedHeaders([]string{"Content-Type", "Authorization"}),
 	)

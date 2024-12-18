@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require('uuid'); // UUID for generating unique IDs
 const Poll = require('../models/Poll'); // Poll model
 const router = express.Router();
 const axios = require('axios');
+require('dotenv').config();
 
 console.log('Poll model:', Poll); // Debugging: Ensure Poll is imported correctly
 
@@ -49,7 +50,7 @@ router.post('/', async (req, res) => {
     const createdPoll = await poll.save();
 
      // Generate the shareable link
-     const shareableLink = `http://localhost:5173/polls/${createdPoll.poll_id}`; // Frontend URL for polls
+     const shareableLink = `${process.env.FRONTEND_URL}/polls/${createdPoll.poll_id}`; // Frontend URL for polls
 
     // Send a request to the Analytics Service to initialize analytics for this poll
     const analyticsPayload = {

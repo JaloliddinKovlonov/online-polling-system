@@ -5,6 +5,7 @@ import (
 	"analytics-service/routes"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -22,8 +23,14 @@ func main() {
 	router := mux.NewRouter()
 	routes.InitRoutes(router)
 
+	// Get frontend URL from the environment variable
+	frontendURL := os.Getenv("FRONTEND_URL")
+	if frontendURL == "" {
+		log.Fatal("FRONTEND_URL environment variable is not set")
+	}
+
 	corsOptions := handlers.CORS(
-		handlers.AllowedOrigins([]string{"http://localhost:5173"}), // Your React app's URL
+		handlers.AllowedOrigins([]string{frontendURL}), // Your React app's URL
 		handlers.AllowedMethods([]string{"GET", "POST", "PATCH", "DELETE"}),
 		handlers.AllowedHeaders([]string{"Content-Type", "Authorization"}),
 	)

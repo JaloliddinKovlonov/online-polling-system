@@ -8,9 +8,9 @@ const router = express.Router();
 
 // Register User
 router.post('/register', async (req, res) => {
-  const { username, email, password, address } = req.body;
+  const { username, email, password } = req.body;
 
-  if (!username || !email || !password || !address) {
+  if (!username || !email || !password) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
@@ -24,8 +24,8 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const result = await pool.query(
-      'INSERT INTO users (username, email, password, address) VALUES ($1, $2, $3, $4) RETURNING id, username, email, address',
-      [username, email, hashedPassword, address]
+      'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id, username, email',
+      [username, email, hashedPassword]
     );
 
     const user = result.rows[0];
@@ -92,7 +92,7 @@ router.get('/profile', async (req, res) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const result = await pool.query(
-      'SELECT id, username, email, address FROM users WHERE id = $1',
+      'SELECT id, username, email FROM users WHERE id = $1',
       [decoded.id]
     );
 
@@ -117,14 +117,14 @@ router.patch('/profile', async (req, res) => {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const { username, email, address } = req.body;
+  const { username, email } = req.body;
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const result = await pool.query(
-      'UPDATE users SET username = $1, email = $2, address = $3 WHERE id = $4 RETURNING id, username, email, address',
-      [username, email, address, decoded.id]
+      'UPDATE users SET username = $1, email = $2 WHERE id = $3 RETURNING id, username, email',
+      [username, email, decoded.id]
     );
 
     if (result.rows.length === 0) {
